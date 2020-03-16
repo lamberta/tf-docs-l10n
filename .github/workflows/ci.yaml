@@ -20,12 +20,14 @@ jobs:
       run: |
         pip install --upgrade absl-py
         cd ./docs-l10n && git fetch origin master:master
+        git config --global user.email "tfdocsbot+no-reply@gmail.com"
+        git config --global user.name "TF DocsBot"
     - name: nbfmt
       run: |
         cd ./docs-l10n
-        git branch
-        echo "On branch: $(git rev-parse --abbrev-ref HEAD)"
-        echo "---"
         NOTEBOOKS_CHANGED="$(git diff --name-only master | grep '\.ipynb$')"
-        echo "--> $NOTEBOOKS_CHANGED"
+        echo "Run nbfmt.py on updated notebooks:"
         python ../docs/tools/nbfmt.py --ignore_warn $NOTEBOOKS_CHANGED
+        git add $NOTEBOOKS_CHANGED
+        git commit -m "CI: nbfmt"
+        git push
