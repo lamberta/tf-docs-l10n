@@ -2,11 +2,11 @@ name: Continuous Integration
 on: push
 
 jobs:
-  nbfmt:
-    name: nbfmt
+  format_notebooks:
+    name: Format notebooks
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout tensorflow/docs-l10n
+    - name: Checkout user/docs-l10n
       uses: actions/checkout@v2
       with:
         path: docs-l10n
@@ -16,13 +16,16 @@ jobs:
         repository: tensorflow/docs
         path: docs
     - uses: actions/setup-python@v1
-    - name: Install dependencies
-      run: pip install --upgrade absl-py
-#    - name: Format notebook
-#      run: ./tools/nbfmt_pr.sh
-    - name: Display Python version
-      run: python -c "import sys; print(sys.version)"
-    - name: Show environment
+    - name: Set up environment
       run: |
-        pwd
-        ls -al
+        pip install --upgrade absl-py
+        cd ./docs-l10n && git fetch origin master:master
+    - name: nbfmt
+      run: |
+        cd ./docs-l10n
+        git branch
+        echo "On branch: $(git rev-parse --abbrev-ref HEAD)"
+        echo "---"
+        NOTEBOOKS_CHANGED="$(git diff --name-only master | grep '\.ipynb$')"
+        echo "--> $NOTEBOOKS_CHANGED"
+        python ../docs/tools/nbfmt.py --ignore_warn $NOTEBOOKS_CHANGED
