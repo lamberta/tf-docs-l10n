@@ -25,9 +25,11 @@ jobs:
     - name: nbfmt
       run: |
         cd ./docs-l10n
-        NOTEBOOKS_CHANGED="$(git diff --name-only master | grep '\.ipynb$')"
         echo "Run nbfmt.py on updated notebooks:"
+        NOTEBOOKS_CHANGED="$(git diff --name-only master | grep '\.ipynb$')"
         python ../docs/tools/nbfmt.py --ignore_warn $NOTEBOOKS_CHANGED
-        git add $NOTEBOOKS_CHANGED
-        git commit -m "CI: nbfmt"
-        git push
+        if git ls-files --modified > /dev/null; then
+          git add $NOTEBOOKS_CHANGED
+          git commit -m "CI: nbfmt"
+          git push
+        fi
