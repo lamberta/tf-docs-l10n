@@ -40,7 +40,7 @@ jobs:
     - name: Install nblint
       run: |
         python3 -m pip install -U git+https://github.com/tensorflow/docs
-    - name: Check notebook formatting
+    - name: Lint notebooks
       run: |
         # Only check notebooks modified in this pull request.
         notebooks="$(git diff --name-only master | grep '\.ipynb$' | grep -v 'en-snapshot' || true)"
