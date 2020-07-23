@@ -1,21 +1,38 @@
-name: Comment
+# An indicator of community approval, not maintainer approval.
+name: Community approval
 on:
   issue_comment:
     types: [created, edited]
+  pull_request_review:
+    types: [submitted]
 
 jobs:
+  approval:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check pull request approval
+      if: "contains(github.event.review.state, 'approved')"
+      env:
+        URL: "${{ github.event.pull_request.issue_url }}"
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      run: |
+        curl -X POST \
+          -H "Accept: application/vnd.github.v3+json" \
+          -H "Authorization: token $GITHUB_TOKEN" \
+          "${URL}/labels" \
+          --data '{"labels":["lgtm"]}'
+
   lgtm:
     runs-on: ubuntu-latest
     steps:
-    - name: Add community approval label
+    - name: Check comment LGTM
+      # contains is case-insensitive.
       if: "contains(github.event.comment.body, 'LGTM')"
       env:
         URL: "${{ github.event.issue.url }}"
         GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       run: |
-        echo ">>${URL}<<"
-        curl \
-          -X POST \
+        curl -X POST \
           -H "Accept: application/vnd.github.v3+json" \
           -H "Authorization: token $GITHUB_TOKEN" \
           "${URL}/labels" \
