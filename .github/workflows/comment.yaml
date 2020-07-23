@@ -13,8 +13,10 @@ jobs:
         URL: "${{ github.event.issue.labels_url }}"
         GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       run: |
+        echo ">>${URL}<<"
         curl \
           -X POST \
           -H "Accept: application/vnd.github.v3+json" \
+          -H "Authorization: token $GITHUB_TOKEN" \
           $URL \
           --data '{"labels":["lgtm"]}'
