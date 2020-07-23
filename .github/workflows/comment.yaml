@@ -1,0 +1,20 @@
+name: Comment
+on:
+  issue_comment:
+    types: [created, edited]
+
+jobs:
+  lgtm:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Add community approval label
+      if: contains(github.event.comment.body, "LGTM")
+      env:
+        URL: "${{ github.event.issue.labels_url }}"
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      run: |
+        curl \
+          -X POST \
+          -H "Accept: application/vnd.github.v3+json" \
+          $URL \
+          --data '{"labels":["lgtm"]}'
