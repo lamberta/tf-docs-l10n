@@ -7,7 +7,7 @@ on:
 
 jobs:
   labeler:
-    # Label rules in .github/labeler.yml
+    # Label rules in .github/labeler.yaml
     runs-on: ubuntu-latest
     steps:
     - uses: actions/labeler@v2
