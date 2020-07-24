@@ -1,4 +1,8 @@
-# An indicator of community approval, not maintainer approval.
+# This workflow adds the community approval label ("lgtm") to pull requests.
+# It does *not* indicate maintainer approval. This a way to visually highlight
+# that someone/anyone thinks the pull request is ready for further review.
+# This event is triggered by a pull request approval, or simply a comment that
+# contains the text "lgtm".
 name: Community approval
 on:
   issue_comment:
