@@ -13,6 +13,7 @@ jobs:
     - name: Fetch pull request branch
       uses: actions/checkout@v2
       with:
+        # Head repo is the user's fork. Ref is the branch name.
         repository: ${{ github.event.client_payload.pull_request.head.repo.full_name }}
         ref: ${{ github.event.client_payload.pull_request.head.ref }}
     - name: Fetch master branch
@@ -51,6 +52,7 @@ jobs:
     - name: Fetch pull request branch
       uses: actions/checkout@v2
       with:
+        repository: ${{ github.event.client_payload.pull_request.head.repo.full_name }}
         ref: ${{ github.event.client_payload.pull_request.head.ref }}
     - name: Fetch master branch
       run: git fetch -u origin master:master
@@ -59,7 +61,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         ISSUE_URL: ${{ github.event.client_payload.pull_request.issue_url }}
         PR_NUM: ${{ github.event.client_payload.pull_request.number }}
-        # Head repo is the user's fork. Ref is the branch name.
         HEAD_REPOSITORY: ${{ github.event.client_payload.pull_request.head.repo.full_name }}
         HEAD_REF: ${{ github.event.client_payload.pull_request.head.ref }}
       run: |
@@ -108,19 +109,16 @@ jobs:
     - name: Fetch pull request branch
       uses: actions/checkout@v2
       with:
+        repository: ${{ github.event.client_payload.pull_request.head.repo.full_name }}
         ref: ${{ github.event.client_payload.pull_request.head.ref }}
     - name: Fetch master branch
-      run: git fetch -u origin master:master
+      run: git fetch -u "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" master:master
     - name: Format notebooks
       # Check for opt-out label.
       if: "!contains(github.event.client_payload.pull_request.labels.*.name, 'nbfmt-disable')"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        ISSUE_URL: ${{ github.event.client_payload.pull_request.issue_url }}
-        # Head repo is the user's fork. Ref is the branch name.
-        HEAD_REPOSITORY: ${{ github.event.client_payload.pull_request.head.repo.full_name }}
-        HEAD_REF: ${{ github.event.client_payload.pull_request.head.ref }}
       run: |
+        echo "--> $GITHUB_SERVER_URL/$GITHUB_REPOSITORY"
+        git remote -v
         # Only want notebooks modified in this pull request.
         readarray -t changed_files < <(git diff --name-only master | grep '\.ipynb$' || true)
         if [[ ${#changed_files[@]} == 0 ]]; then
