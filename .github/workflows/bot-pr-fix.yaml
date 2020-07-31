@@ -5,7 +5,10 @@ on:
 
 jobs:
   nbfmt:
-    if: ${{ github.actor == 'tfdocsbot' }}
+    # Only run as bot and check for opt-out label.
+    if: >-
+      ${{ github.actor == 'tfdocsbot' &&
+          !contains(github.event.client_payload.pull_request.labels.*.name, 'nbfmt-disable') }}
     runs-on: ubuntu-latest
     steps:
     - name: Set up Python
@@ -15,13 +18,12 @@ jobs:
     - name: Fetch pull request branch
       uses: actions/checkout@v2
       with:
+        # Head repo is the user's fork. Ref is the branch name.
         repository: ${{ github.event.client_payload.pull_request.head.repo.full_name }}
         ref: ${{ github.event.client_payload.pull_request.head.ref }}
     - name: Fetch base master branch
       run: git fetch -u "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" master:master
     - name: Format notebooks
-      # Check for opt-out label.
-      if: ${{ !contains(github.event.client_payload.pull_request.labels.*.name, 'nbfmt-disable') }}
       run: |
         # Only want notebooks modified in this pull request.
         readarray -t changed_files < <(git diff --name-only master | grep '\.ipynb$' || true)

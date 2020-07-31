@@ -8,6 +8,7 @@ on:
 
 jobs:
   label:
+    if: ${{ github.actor == 'tfdocsbot' }}
     runs-on: ubuntu-latest
     steps:
     - name: Fetch pull request branch
@@ -47,6 +48,7 @@ jobs:
           --data "$json_data"
 
   comment:
+    if: ${{ github.actor == 'tfdocsbot' }}
     runs-on: ubuntu-latest
     steps:
     - name: Fetch pull request branch
