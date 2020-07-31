@@ -5,7 +5,7 @@ on:
 
 jobs:
   nbfmt:
-    if: ${{ github.actor == 'tfdocsboto' }}
+    if: ${{ github.actor == 'tfdocsbot' }}
     runs-on: ubuntu-latest
     steps:
     - name: Set up Python
