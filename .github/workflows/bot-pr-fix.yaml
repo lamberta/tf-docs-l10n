@@ -1,7 +1,7 @@
 name: Pull request updates
 on:
   repository_dispatch:
-    types: [opened, reopened, push]
+    types: [opened, reopened, synchronize]
 
 jobs:
   nbfmt:
