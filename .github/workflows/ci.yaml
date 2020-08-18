@@ -81,3 +81,26 @@ jobs:
           printf -- "- %s\n" "${orphan_files[@]}"
           exit 1
         fi
+
+  sot-check:
+    name: Source-of-truth check
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Fetch master branch
+      run: git fetch -u origin master:master
+    - name: Check for source doc
+      run: |
+        # Only check docs modified in this pull request.
+        echo "workspace: $GITHUB_WORKSPACE"
+        ls $GITHUB_WORKSPACE
+        readarray -t changed_files < <(git diff --name-only master || true)
+        if [[ ${#changed_files[@]} == 0 ]]; then
+          echo "No docs modified in this pull request."
+          exit 0
+        else
+          echo "Find source file for translation:"
+          for translation_fp in "${changed_files[@]}"; do
+            
+          done
+        fi
