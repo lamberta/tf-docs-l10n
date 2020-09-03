@@ -91,8 +91,11 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         ISSUE_URL: ${{ github.event.client_payload.pull_request.issue_url }}
       run: |
+        git restore -s master -- ./tools/ci/utils.sh
+        source ./tools/ci/utils.sh
+
         # Grab any changed files under a site/<lang>/ subdirectory.
-        readarray -t changed_files < <(git diff --name-only master | grep 'site/.*/' || true)
+        readarray -t changed_files < <(get_changed_files | grep 'site/.*/')
         if [[ ${#changed_files[@]} == 0 ]]; then
           echo "No site/<lang>/ files modified in this pull request."
           exit 0
@@ -102,6 +105,7 @@ jobs:
           # Parse site/<lang>/ subdirectory for label.
           lang=$(echo "$fp" | sed 's|.*site.\([^/]*\)/.*|\1|')
           labels_set["$lang"]=1
+          echo "--> $fp"
         done
         # Format labels into combined string.
         labels_str=$(printf '\"%s\", ' "${!labels_set[@]}")
